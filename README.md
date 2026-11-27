@@ -42,7 +42,7 @@ Run the plugin inside LancerLogin on your own computer, from a Core checkout bes
 ```sh
 git clone https://github.com/isriah/LancerLogin.git ../LancerLogin
 cd ../LancerLogin
-git checkout v2.1.0-beta.11
+git checkout v2.1.0-beta.13
 npm ci --no-audit
 npm run plugins:dev -- --plugin ../<your plugin folder>
 ```
@@ -71,15 +71,15 @@ Rules Core enforces when it composes the plugin: plugin code imports only `@lanc
 
 | Plugin | LancerLogin Core | Module contract |
 | --- | --- | --- |
-| 0.1.x | `>=2.1.0-beta.11 <3.0.0` (Modular 2.1.0-beta.11 and later 2.x releases) | 1 |
+| 0.1.x | `>=2.1.0-beta.13 <3.0.0` (Modular 2.1.0-beta.13 and later 2.x releases) | 1 |
 
 The supported Core range is the `lancerlogin.core` field in `package.json`. Composition refuses the plugin for a Core outside that range, before an installation build or web update starts. React and `@lancerlogin/module-sdk` are peer dependencies provided by Core.
 
-The range starts at the Core release that Verify is pinned to, because that is the oldest Core this code has been built with. That release provides module SDK 1.6.0, so the SDK peer range is `^1.6.0`. To support an older Core, lower the pin in `.github/plugin-release.json`, `lancerlogin.core` and the SDK peer range together, and use only what that release's SDK exports.
+The range starts at the Core release that Verify is pinned to, because that is the oldest Core this code has been built with. That release provides module SDK 1.9.0, so the SDK peer range is `^1.9.0`. To support an older Core, lower the pin in `.github/plugin-release.json`, `lancerlogin.core` and the SDK peer range together, and use only what that release's SDK exports.
 
 ## Continuous integration
 
-**Verify** (`.github/workflows/ci.yml`) runs on every push to `main`, every pull request and on demand. It runs the unit tests, checks out the LancerLogin Core commit pinned in `.github/plugin-release.json` from the public [isriah/LancerLogin](https://github.com/isriah/LancerLogin) repository (currently Modular `v2.1.0-beta.11`, pinned by its full commit SHA; the tag is recorded beside it for people), composes this plugin commit into it with Core's official plugins and typechecks and builds the composed Worker and dashboard.
+**Verify** (`.github/workflows/ci.yml`) runs on every push to `main`, every pull request and on demand. It runs the unit tests, checks out the LancerLogin Core commit pinned in `.github/plugin-release.json` from the public [isriah/LancerLogin](https://github.com/isriah/LancerLogin) repository (currently Modular `v2.1.0-beta.13`, pinned by its full commit SHA; the tag is recorded beside it for people), composes this plugin commit into it with Core's official plugins and typechecks and builds the composed Worker and dashboard.
 
 No repository secrets are needed. Two optional secrets are used only when set, for a Core pin that is private: `LANCERLOGIN_CORE_TOKEN` (Contents: read on that Core repository) and `LANCERLOGIN_PLUGIN_TOKEN` (read access to private plugin repositories that Core composes).
 
