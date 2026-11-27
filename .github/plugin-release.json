@@ -3,7 +3,7 @@
   "title": "LancerLogin Example Module plugin",
   "core": {
     "repository": "isriah/LancerLogin",
-    "tag": "v2.0.0-beta.12",
-    "commit": "f0b98331f7b0c3f1bce9033e42bbd62d3f8ca9d9"
+    "tag": "v2.1.0-beta.11",
+    "commit": "dd89a6be28c033629efb83bb338e0e15eaeba896"
   }
 }
