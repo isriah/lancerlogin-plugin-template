@@ -9,7 +9,7 @@ A minimal, working LancerLogin module plugin to start from. It adds an **Example
 - a backup contribution, so notes are included in portable backups, and cleanup steps for retained-data deletion;
 - unit tests, a Verify workflow that composes the plugin into LancerLogin Core and typechecks and builds it, and the release and nightly workflows the official plugins use.
 
-LancerLogin composes a plugin into an installation's own build at an exact commit. For how to write plugins, see `docs/PLUGIN-AUTHORING.md` in isriah/LancerLogin (available from the next Modular release), and `docs/MODULE-PLUGINS.md` there for how plugins are selected, composed, updated and removed. The official plugins, [isriah/lancerlogin-outreach](https://github.com/isriah/lancerlogin-outreach) and [isriah/lancerlogin-carpool](https://github.com/isriah/lancerlogin-carpool), are larger examples of the same structure.
+LancerLogin composes a plugin into an installation's own build at an exact commit. For how to write plugins, see [Writing a plugin](https://github.com/isriah/LancerLogin/blob/main/docs/PLUGIN-AUTHORING.md) in isriah/LancerLogin, and [Module plugins](https://github.com/isriah/LancerLogin/blob/main/docs/MODULE-PLUGINS.md) there for how plugins are selected, composed, updated and removed. Three published plugins are larger examples of the same structure: [isriah/lancerlogin-outreach](https://github.com/isriah/lancerlogin-outreach), [isriah/lancerlogin-carpool](https://github.com/isriah/lancerlogin-carpool) and [isriah/lancerlogin-visits](https://github.com/isriah/lancerlogin-visits).
 
 ## Use this template
 
@@ -35,6 +35,20 @@ LancerLogin composes a plugin into an installation's own build at an exact commi
 
    Pins are always full commit SHAs; tags and branches are refused. From a LancerLogin Core checkout, `npm run plugins:resolve -- --selection path/to/lancerlogin.modules.json --track stable --module example-module` writes the commit of the newest stable release into the selection. A private plugin repository also needs `LANCERLOGIN_PLUGIN_TOKEN` in the deployment repository, with read access to the plugin repository. The next installation build or web update composes the plugin, and an Administrator then enables it.
 
+## Develop locally
+
+Run the plugin inside LancerLogin on your own computer, from a Core checkout beside this repository:
+
+```sh
+git clone https://github.com/isriah/LancerLogin.git ../LancerLogin
+cd ../LancerLogin
+git checkout v2.1.0-beta.11
+npm ci --no-audit
+npm run plugins:dev -- --plugin ../<your plugin folder>
+```
+
+The command composes the plugin folder as it is, uncommitted changes included, with the same checks an installation build runs. It then starts the Worker (`http://localhost:8787` by default) and the dashboard (`http://localhost:5173` by default) with a local database. Nothing is deployed. See [Develop locally](https://github.com/isriah/LancerLogin/blob/main/docs/PLUGIN-AUTHORING.md#develop-locally) in the authoring guide.
+
 ## Layout
 
 | Path | Purpose |
@@ -57,13 +71,15 @@ Rules Core enforces when it composes the plugin: plugin code imports only `@lanc
 
 | Plugin | LancerLogin Core | Module contract |
 | --- | --- | --- |
-| 0.1.x | `>=2.0.0-beta.12 <3.0.0` (Modular 2.0.0-beta.12 and later 2.x releases) | 1 |
+| 0.1.x | `>=2.1.0-beta.11 <3.0.0` (Modular 2.1.0-beta.11 and later 2.x releases) | 1 |
 
 The supported Core range is the `lancerlogin.core` field in `package.json`. Composition refuses the plugin for a Core outside that range, before an installation build or web update starts. React and `@lancerlogin/module-sdk` are peer dependencies provided by Core.
 
+The range starts at the Core release that Verify is pinned to, because that is the oldest Core this code has been built with. That release provides module SDK 1.6.0, so the SDK peer range is `^1.6.0`. To support an older Core, lower the pin in `.github/plugin-release.json`, `lancerlogin.core` and the SDK peer range together, and use only what that release's SDK exports.
+
 ## Continuous integration
 
-**Verify** (`.github/workflows/ci.yml`) runs on every push to `main`, every pull request and on demand. It runs the unit tests, checks out the LancerLogin Core commit pinned in `.github/plugin-release.json` from the public [isriah/LancerLogin](https://github.com/isriah/LancerLogin) repository (currently Modular `v2.0.0-beta.12`, pinned by its full commit SHA; the tag is recorded beside it for people), composes this plugin commit into it with Core's official plugins and typechecks and builds the composed Worker and dashboard.
+**Verify** (`.github/workflows/ci.yml`) runs on every push to `main`, every pull request and on demand. It runs the unit tests, checks out the LancerLogin Core commit pinned in `.github/plugin-release.json` from the public [isriah/LancerLogin](https://github.com/isriah/LancerLogin) repository (currently Modular `v2.1.0-beta.11`, pinned by its full commit SHA; the tag is recorded beside it for people), composes this plugin commit into it with Core's official plugins and typechecks and builds the composed Worker and dashboard.
 
 No repository secrets are needed. Two optional secrets are used only when set, for a Core pin that is private: `LANCERLOGIN_CORE_TOKEN` (Contents: read on that Core repository) and `LANCERLOGIN_PLUGIN_TOKEN` (read access to private plugin repositories that Core composes).
 
@@ -73,8 +89,8 @@ Run the same checks locally from a clean commit with a Core checkout beside it:
 
 ```sh
 git clone https://github.com/isriah/LancerLogin.git ../LancerLogin
-git -C ../LancerLogin checkout f0b98331f7b0c3f1bce9033e42bbd62d3f8ca9d9
-(cd ../LancerLogin && npm ci)
+git -C ../LancerLogin checkout dd89a6be28c033629efb83bb338e0e15eaeba896
+(cd ../LancerLogin && npm ci --no-audit)
 npm test
 npm run verify:core -- ../LancerLogin              # compose, typecheck and build
 npm run verify:core -- ../LancerLogin --mode fast  # compose and typecheck only
